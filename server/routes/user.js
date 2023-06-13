@@ -3,7 +3,6 @@ const ctrls = require('../controllers/user');
 
 router.post('/register', ctrls.register )
 router.post('/login', ctrls.login )
+router.get('/profile', ctrls.profile )
 
 module.exports = router;
-
-//CRUD \ Create - Read - Update - Delete \ Post - Get - Put - Delete

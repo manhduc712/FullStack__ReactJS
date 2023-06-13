@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const asyncHandler = require('express-async-handler');
 const { generateAccessToken, generateRefreshToken } = require('../middlewares/jwt');
+const jwt = require('jsonwebtoken');
 
 const register = asyncHandler(async (req, res) => {
     const { email, password, firstname, lastname } = req.body;
@@ -24,37 +25,63 @@ const register = asyncHandler(async (req, res) => {
 })
 
 const login = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const { email, password, isBlocked } = req.body;
+    if (!email || !password ) {
         return res.status(400).json({
             success: false,
             message: 'Please enter all required fields'
         })
-    }
+    } 
     const response = await User.findOne({ email: email });
     if (response && await response.isCorrectPassword(password)) {
         //Tách password và role ra khỏi object || trả về object
         const { password, role, ...userData } = response.toObject();
         // Tạo token
-        const accessToken = generateAccessToken(response.uid, role);
+        const accessToken = generateAccessToken(response._id, role);
         // Tạo refreshToken
-        const refreshToken = generateRefreshToken(response.uid);
+        const refreshToken = generateRefreshToken(response._id);
         // Lưu refreshToken vào db 
         await User.findByIdAndUpdate(response.id, { refeshToken: refreshToken }, { new: true });
         // Lưu refreshToken vào cookie
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 3 * 24 * 60 * 60 * 1000})
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 3 * 24 * 60 * 60 * 1000 })
         return res.status(200).json({
             success: true,
             accessToken,
             message: 'Login successfully',
-            userData
+            // userData
         })
     } else {
         throw new Error('Email or password is incorrect');
     }
 })
 
+const profile = asyncHandler(async (req, res) => {
+    const authorization = req.headers?.authorization || ""
+    if (authorization) {
+        const token = authorization.split(' ')[1];
+        if (!token) {
+            throw new Error('tOKEN not found');
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)._id
+        const user = await User.findById(decoded);
+        if (user) {
+            const { refeshToken, password, ...userData } = user.toObject();
+            return res.status(200).json({
+                success: true,
+                message: 'Get profile successfully',
+                userData
+            })
+
+        } else {
+            throw new Error('User not found');
+        }
+    } else {
+        throw new Error('authorization not found');
+    }
+})
+
 module.exports = {
     register,
-    login
+    login,
+    profile
 }

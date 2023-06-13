@@ -15,6 +15,11 @@ var userSchema = new mongoose.Schema({
         required: true,
         unique: true, // không được trùng
     },
+    gender: {
+        type: String,
+        required: true,
+    },
+
     mobile: {
         type: String,
         required: true,
