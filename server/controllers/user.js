@@ -25,13 +25,13 @@ const register = asyncHandler(async (req, res) => {
 })
 
 const login = asyncHandler(async (req, res) => {
-    const { email, password, isBlocked } = req.body;
-    if (!email || !password ) {
+    const { email, password } = req.body;
+    if (!email || !password) {
         return res.status(400).json({
             success: false,
             message: 'Please enter all required fields'
         })
-    } 
+    }
     const response = await User.findOne({ email: email });
     if (response && await response.isCorrectPassword(password)) {
         //Tách password và role ra khỏi object || trả về object
@@ -56,16 +56,11 @@ const login = asyncHandler(async (req, res) => {
 })
 
 const profile = asyncHandler(async (req, res) => {
-    const authorization = req.headers?.authorization || ""
-    if (authorization) {
-        const token = authorization.split(' ')[1];
-        if (!token) {
-            throw new Error('tOKEN not found');
-        }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)._id
+    if (req.user) {
+        const decoded = req.user._id;
         const user = await User.findById(decoded);
         if (user) {
-            const { refeshToken, password, ...userData } = user.toObject();
+            const { refeshToken, ...userData } = user.toObject();
             return res.status(200).json({
                 success: true,
                 message: 'Get profile successfully',
@@ -80,8 +75,41 @@ const profile = asyncHandler(async (req, res) => {
     }
 })
 
+const edit = asyncHandler(async (req, res) => {
+    
+})
+// const refreshToken = asyncHandler(async (req, res) => {
+//     const cookie = req.cookies
+//     if (!cookie && !cookie.refreshToken) {
+//         jwt.verify(cookie.refreshToken, process.env.JWT_SECRET, async (err, decoded) => {
+//             if (err) {
+//                 throw new Error('Refresh token is invalid')
+//             }
+//             const response = await User.findOne({ _id: decoded._id, refreshToken: cookie.refreshToken });
+//             return res.status(200).json({
+//                 success: response ? true : false,
+//                 newAccessToken: response ? generateAccessToken(response._id, response.role) : 'Refresh token is invalid'
+//             })
+//         })
+//     }
+// })
+
+// const logout = asyncHandler(async (req, res) => {
+//     const cookie = req.cookies
+//     if (!cookie && !cookie.refreshToken) {
+//         throw new Error('Refresh token is invalid')
+//     }
+//     await User.findOneAndUpdate({ refreshToken: cookie.refreshToken }, { refreshToken: '' }, { new: true });
+//     res.clearCookie('refreshToken', {
+//         httpOnly: true,
+//         secure: true
+//     });
+// })
+
+
 module.exports = {
     register,
     login,
-    profile
+    profile,
+    edit
 }

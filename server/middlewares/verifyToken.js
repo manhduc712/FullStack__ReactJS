@@ -10,7 +10,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
                     success: false,
                     message: 'Invalid token'
                 })
-            console.log(decode);
+            // console.log(decode);
             req.user = decode;
             next();
 

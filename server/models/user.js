@@ -17,14 +17,13 @@ var userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        required: true,
+        default: ''
     },
-
     mobile: {
         type: String,
-        required: true,
-        unique: true,
+        default: ''
     },
+
     password: {
         type: String,
         required: true,
@@ -37,8 +36,12 @@ var userSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-    address: [{ type: mongoose.Types.ObjectId, ref: 'Address' }],// giống khóa phụ trong sql
-    wishlist: [{ type: mongoose.Types.ObjectId, ref: 'Product' }],
+    address: {
+        type: String,
+        default: ''
+    },
+    // address: [{ type: mongoose.Types.ObjectId, ref: 'Address' }],// giống khóa phụ trong sql
+    // wishlist: [{ type: mongoose.Types.ObjectId, ref: 'Product' }],
     isBlocked: {
         type: Boolean,
         default: false,
