@@ -24,6 +24,7 @@ const register = asyncHandler(async (req, res) => {
     }
 })
 
+
 const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -75,41 +76,9 @@ const profile = asyncHandler(async (req, res) => {
     }
 })
 
-const edit = asyncHandler(async (req, res) => {
-    
-})
-// const refreshToken = asyncHandler(async (req, res) => {
-//     const cookie = req.cookies
-//     if (!cookie && !cookie.refreshToken) {
-//         jwt.verify(cookie.refreshToken, process.env.JWT_SECRET, async (err, decoded) => {
-//             if (err) {
-//                 throw new Error('Refresh token is invalid')
-//             }
-//             const response = await User.findOne({ _id: decoded._id, refreshToken: cookie.refreshToken });
-//             return res.status(200).json({
-//                 success: response ? true : false,
-//                 newAccessToken: response ? generateAccessToken(response._id, response.role) : 'Refresh token is invalid'
-//             })
-//         })
-//     }
-// })
-
-// const logout = asyncHandler(async (req, res) => {
-//     const cookie = req.cookies
-//     if (!cookie && !cookie.refreshToken) {
-//         throw new Error('Refresh token is invalid')
-//     }
-//     await User.findOneAndUpdate({ refreshToken: cookie.refreshToken }, { refreshToken: '' }, { new: true });
-//     res.clearCookie('refreshToken', {
-//         httpOnly: true,
-//         secure: true
-//     });
-// })
-
 
 module.exports = {
     register,
     login,
     profile,
-    edit
 }

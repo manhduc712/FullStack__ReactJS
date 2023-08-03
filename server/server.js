@@ -4,7 +4,7 @@ const dbConnect = require('./config/dbconnect')
 const initRoutes = require('./routes')
 const cookieParser = require('cookie-parser')
 
-const app = express()
+const  app = express()
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000') // React
     res.header('Access-Control-Allow-Credentials', true)
